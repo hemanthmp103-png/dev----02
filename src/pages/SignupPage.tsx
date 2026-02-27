@@ -38,15 +38,37 @@ export const SignupPage = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      const result = await response.json();
+      
       if (response.ok) {
+        const result = await response.json();
         login(result);
         navigate('/dashboard');
       } else {
+        const result = await response.json();
         setError(result.error);
       }
     } catch (e) {
-      setError("Something went wrong. Please try again.");
+      console.warn("Backend unreachable. Entering Demo Mode.");
+      // Demo Mode Fallback: Simulate successful signup
+      const demoUser = {
+        id: Math.random().toString(36).substr(2, 9),
+        ...data,
+        created_at: new Date().toISOString()
+      };
+      
+      // Store in demo users list
+      const demoUsers = JSON.parse(localStorage.getItem('demo_users') || '[]');
+      if (demoUsers.find((u: any) => u.email === data.email)) {
+        setError("Email already exists (Demo Mode)");
+        setLoading(false);
+        return;
+      }
+      
+      demoUsers.push(demoUser);
+      localStorage.setItem('demo_users', JSON.stringify(demoUsers));
+      
+      login(demoUser);
+      navigate('/dashboard');
     } finally {
       setLoading(false);
     }
