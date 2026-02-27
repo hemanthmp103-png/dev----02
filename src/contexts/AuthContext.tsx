@@ -20,12 +20,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     if (user) {
-      const newSocket = io();
-      newSocket.emit('join', user.id);
-      setSocket(newSocket);
-      return () => {
-        newSocket.close();
-      };
+      try {
+        const newSocket = io({
+          reconnectionAttempts: 3,
+          timeout: 5000,
+        });
+        
+        newSocket.on('connect_error', () => {
+          console.warn('Socket connection failed. Real-time features disabled (Demo Mode).');
+        });
+
+        newSocket.emit('join', user.id);
+        setSocket(newSocket);
+        return () => {
+          newSocket.close();
+        };
+      } catch (e) {
+        console.warn('Socket initialization failed. Demo Mode active.');
+      }
     }
   }, [user]);
 
