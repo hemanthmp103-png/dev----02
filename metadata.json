@@ -1,0 +1,5 @@
+{
+  "name": "PawRescue: Street Animal Rescue Platform",
+  "description": "A comprehensive platform connecting citizens and NGOs to rescue, adopt, and care for street animals in distress.",
+  "requestFramePermissions": ["geolocation"]
+}
