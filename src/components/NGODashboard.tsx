@@ -18,10 +18,42 @@ export const NGODashboard = () => {
   const fetchReports = async () => {
     try {
       const res = await fetch(`/api/reports?city=${user?.city}&state=${user?.state}`);
-      const data = await res.json();
-      setReports(data);
+      if (res.ok) {
+        const data = await res.json();
+        setReports(data);
+      } else {
+        throw new Error("Failed to fetch");
+      }
     } catch (e) {
-      console.error(e);
+      console.warn("Backend unreachable. Loading Demo NGO Reports.");
+      // Demo Mode Fallback: Sample Data
+      const demoNGOReports = [
+        {
+          id: 201,
+          reporter_id: 'demo_user_1',
+          animal_type: 'Dog',
+          condition: 'Injured Leg',
+          location: 'Market Street',
+          city: user?.city || 'Bangalore',
+          state: user?.state || 'Karnataka',
+          image_url: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&q=80&w=800',
+          status: 'pending',
+          created_at: new Date().toISOString()
+        },
+        {
+          id: 202,
+          reporter_id: 'demo_user_2',
+          animal_type: 'Cat',
+          condition: 'Sick',
+          location: 'Central Park',
+          city: user?.city || 'Bangalore',
+          state: user?.state || 'Karnataka',
+          image_url: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&q=80&w=800',
+          status: 'in-treatment',
+          created_at: new Date().toISOString()
+        }
+      ];
+      setReports(demoNGOReports);
     } finally {
       setLoading(false);
     }
