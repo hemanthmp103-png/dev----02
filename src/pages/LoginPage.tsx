@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -33,15 +34,27 @@ export const LoginPage = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      const result = await response.json();
+      
       if (response.ok) {
+        const result = await response.json();
         login(result);
         navigate('/dashboard');
       } else {
+        const result = await response.json();
         setError(result.error);
       }
     } catch (e) {
-      setError("Something went wrong. Please try again.");
+      console.warn("Backend unreachable. Checking Demo Users.");
+      // Demo Mode Fallback: Check local storage
+      const demoUsers = JSON.parse(localStorage.getItem('demo_users') || '[]');
+      const user = demoUsers.find((u: any) => u.email === data.email && u.password === data.password);
+      
+      if (user) {
+        login(user);
+        navigate('/dashboard');
+      } else {
+        setError("Invalid credentials (Demo Mode). Please sign up first.");
+      }
     } finally {
       setLoading(false);
     }
